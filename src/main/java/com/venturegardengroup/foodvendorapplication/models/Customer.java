@@ -8,10 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.UniqueConstraint;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -29,16 +27,16 @@ public class Customer {
     private Date date_time_created;
     private Double amount_outstanding;
 
-    @OneToMany(mappedBy ="customer")
     @JsonIgnore
-    private List<Notification> notifications;
+    @OneToMany(mappedBy ="customer")
+    private Set<Notification> notifications;
 
-    @OneToMany(mappedBy ="customer")
     @JsonIgnore
+    @OneToMany(mappedBy ="customer")
     private Set<Order> orders;
 
-    @OneToOne(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "email", referencedColumnName = "email")
+    @JsonIgnore
+    @OneToOne()
     private Auth auth;
 
     public Customer(){
@@ -101,11 +99,11 @@ public class Customer {
         this.amount_outstanding = amount_outstanding;
     }
 
-    public List<Notification> getNotifications() {
+    public Set<Notification> getNotifications() {
         return notifications;
     }
 
-    public void setNotifications(List<Notification> notifications) {
+    public void setNotifications(Set<Notification> notifications) {
         this.notifications = notifications;
     }
 

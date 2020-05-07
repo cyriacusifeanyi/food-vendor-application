@@ -18,8 +18,8 @@ public class  OrderStatus{
     private Long id;
     private String name;
 
-    @OneToMany(mappedBy = "orderStatus")
     @JsonIgnore
+    @OneToMany(mappedBy = "orderStatus")
     private Set<Order> orders;
 
     public OrderStatus(){

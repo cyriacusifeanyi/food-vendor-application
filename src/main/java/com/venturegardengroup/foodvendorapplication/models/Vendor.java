@@ -8,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import java.util.Date;
@@ -38,8 +37,7 @@ public class  Vendor{
     private Set<Notification> notifications;
 
     @JsonIgnore
-    @OneToOne(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "email", referencedColumnName = "email")
+    @OneToOne()
     private Auth auth;
 
     public Vendor(){
