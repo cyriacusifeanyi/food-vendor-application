@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${vendor.businessName}">Business name</title>
+</head>
+<body>
+<h2>Vendor Detail</h2>
+Business Name: <span th:text="${vendor.businessName}">null business name></span>
+Phone Number: <span th:text="${vendor.phoneNumber}"> null phoneNumber</span>
+Date-Time Created: <span th:text="${vendor.dateTimeCreated}"> null dateTimeCreated</span>
+
+<h2>List of Menus</h2>
+<ul>
+    <li th:each="menu: ${vendor.menus}">
+        <a th:href="@{/menus/{id}(id=${menu.id})}">
+            Menu name: <span th:text = "${menu.name}"></span>
+        </a>
+        Menu description: <span th:text = "${menu.description}"></span>
+        Menu price: <span th:text = "${menu.price}"></span>
+
+    </li>
+</ul>
+
+</body>
+</html>

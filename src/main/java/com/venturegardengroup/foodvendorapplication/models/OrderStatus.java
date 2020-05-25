@@ -1,52 +1,32 @@
 package com.venturegardengroup.foodvendorapplication.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.domain.AbstractPersistable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import java.util.Set;
+import javax.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 
-@Entity(name = "order_statuses")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class  OrderStatus{
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+//@EqualsAndHashCode(callSuper = true)
+@Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+@Table(name = "order_statuses")
+//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+public class  OrderStatus extends AbstractPersistable<Integer> {
+    //how do i initialize this table with values like "pending",
+    // "in-progress", "completed", "canceled",
+
+    @Column(name = "name")
     private String name;
+    @OneToMany(mappedBy = "orderStatusId")
+    private List<Order> orders = new ArrayList<>();
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "orderStatus")
-    private Set<Order> orders;
-
-    public OrderStatus(){
-
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Set<Order> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(Set<Order> orders) {
-        this.orders = orders;
-    }
 }

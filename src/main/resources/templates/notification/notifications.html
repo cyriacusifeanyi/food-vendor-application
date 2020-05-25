@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Notifications</title>
+</head>
+<body>
+
+<h2>Notifications</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Sender
+        <th>Receiver
+        <th>Order
+        <th>Message
+        <th>Message status
+        <th>Time Created
+    <tbody>
+    <tr th:each="notification: ${notifications}">
+        <td th:text="${notification.vendorId.businessName}">
+        <td th:text="${notification.customerId.fullName}">
+        <td th:text="${notification.orderId.id}">
+        <td th:text="${notification.message}">
+        <td th:text="${notification.messageStatusId.name}">
+        <td th:text="${notification.dateTimeCreated}">
+</table>
+
+<h2>Send notification</h2>
+<form th:action="@{/notification}" method="POST">
+
+    <label>Vendor Id:
+        <select name="vendorId">
+            <option th:each="vendor : ${vendors}" th:text="${vendor.businessName}" th:value="${vendor.id}">
+                Vendor's name
+            </option>
+        </select>
+    </label>
+    <label>Customer Id:
+        <select name="customerId">
+            <option th:each="customer : ${customers}" th:text="${customer.fullName}" th:value="${customer.id}">
+                Customer's name
+            </option>
+        </select>
+    </label>
+    <label>Order Id:
+        <select name="orderId">
+            <option th:each="order : ${orders}" th:text="${order.id}" th:value="${order.id}">
+                Order Id
+            </option>
+        </select>
+    </label>
+    <label>Message Status Id:
+        <select name="messageStatusId">
+            <option th:each="messageStatus : ${messageStatuses}" th:text="${messageStatus.name}" th:value="${messageStatus.id}">
+                Message Status name
+            </option>
+        </select>
+    </label>
+    <label>Message:
+        <input type="text" name="message">
+    </label>
+
+    <input type="submit" value="Send Message"/>
+</form>
+</body>
+</html>

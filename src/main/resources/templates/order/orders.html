@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Order</title>
+</head>
+<body>
+<h1>Orders</h1>
+
+<ul>
+    <li th:each="order: ${orders}">
+        <a th:href="@{/orders/{id}(id=${order.id})}">
+            <span th:text="${order.id + ': ' + order.amountDue}">Order_id: Order_amount_due</span>
+        </a>
+    </li>
+</ul>
+
+<h2>Create Order</h2>
+<form th:action="@{/order}" method="POST">
+
+    <label>Customer name:
+<!--        (after session i will be able to hold some model id across request)-->
+        <select name="customerId">
+            <option th:each="customer : ${customers}"
+                    th:text="${customer.fullName}"
+                    th:value="${customer.id}">
+                Customer Full name
+            </option>
+        </select>
+    </label>
+
+    <label>Menu of choice:
+        <select name="menuId">
+            <option th:each="menu : ${menus}"
+                    th:text="${menu.name}"
+                    th:value="${menu.id}">
+                Menu name
+            </option>
+        </select>
+    </label>
+
+    <label>Order status:
+        <select name="orderStatusId">
+            <option th:each="orderStatus : ${orderStatuses}"
+                    th:text="${orderStatus.name}"
+                    th:value="${orderStatus.id}">
+                Order Status name
+            </option>
+        </select>
+    </label>
+
+<!--    <label>Description:-->
+<!--        <textarea name="description" cols="30" rows="10"></textarea>-->
+<!--    </label>-->
+    <label>Amount due:
+        <span></span> <input type="number" name="amountDue">
+    </label>
+    <label>Amount paid
+        <span></span> <input type="number" name="amountPaid">
+    </label>
+    <label>Amount outstanding
+        <span></span> <input type="number" name="amountOutstanding" min="1">
+    </label>
+
+    <input type="submit" value="Add Menu"/>
+</form>
+
+
+</body>
+</html>

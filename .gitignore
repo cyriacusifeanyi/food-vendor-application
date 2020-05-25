@@ -29,3 +29,17 @@ build/
 
 ### VS Code ###
 .vscode/
+
+#dev files & folders
+/src/main/resources/templates/Admin/
+/src/main/resources/templates/example/
+/src/main/java/com/venturegardengroup/foodvendorapplication/temp_trash/
+/src/main/java/com/venturegardengroup/foodvendorapplication/services/example/
+/src/main/java/com/venturegardengroup/foodvendorapplication/resources/example/
+/src/main/java/com/venturegardengroup/foodvendorapplication/repositories/example/
+/src/main/java/com/venturegardengroup/foodvendorapplication/models/example/
+/src/main/java/com/venturegardengroup/foodvendorapplication/controllers/example/
+
+#development H2 database files
+/database.mv.db
+/database.trace.db

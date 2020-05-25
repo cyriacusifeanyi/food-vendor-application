@@ -1,52 +1,40 @@
 package com.venturegardengroup.foodvendorapplication.controllers;
 
 import com.venturegardengroup.foodvendorapplication.models.Auth;
+import com.venturegardengroup.foodvendorapplication.models.Customer;
+import com.venturegardengroup.foodvendorapplication.models.Role;
+import com.venturegardengroup.foodvendorapplication.models.Vendor;
 import com.venturegardengroup.foodvendorapplication.repositories.AuthRepository;
-import org.springframework.beans.BeanUtils;
+import com.venturegardengroup.foodvendorapplication.repositories.CustomerRepository;
+import com.venturegardengroup.foodvendorapplication.repositories.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
+import java.util.ArrayList;
 
-@RestController
-@RequestMapping("/auths")
+//@RestController
+//@RequestMapping("/auths")
+@Controller
 public class AuthController {
     @Autowired
     private AuthRepository authRepository;
 
-    @GetMapping
-    public List<Auth> list() {
-        return authRepository.findAll();
+    @GetMapping("/auths")
+    public String list(Model model) {
+        model.addAttribute("auths", authRepository.findAll());
+        return "auth/auths";
     }
 
-    @GetMapping
-    @RequestMapping("{id}")
-    public Auth get(@PathVariable Long id) {
-        return authRepository.getOne(id);
-    }
-    @PostMapping
-//    @ResponseStatus(HttpStatus.CREATED)
-    public Auth create(@RequestBody final Auth auth){
-        return authRepository.saveAndFlush(auth);
-    }
-    @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
-    public void delete(@PathVariable Long id) {
-        //Also, need to check for children records before deleting.
-        authRepository.deleteById(id);
+    @GetMapping("/auths/{id}")
+    public String getOne(Model model, @PathVariable Long id) {
+        model.addAttribute("auth", authRepository.getOne(id));
+        return "auth/auth";
     }
 
-    @RequestMapping(value = "{id}", method = RequestMethod.PUT)
-    public Auth update(@PathVariable Long id, @RequestBody Auth auth) {
-        //because this is a PUT, we expect all attributes to be passed in. A PATCH would only need...
-        //TODO: Add validation that all attributes are passed in, otherwise return a 400 bad payload
-        Auth existingAuth = authRepository.getOne(id);
-        BeanUtils.copyProperties(auth, existingAuth, "auth_id");
-        return authRepository.saveAndFlush(existingAuth);
-    }
-}
+
+}//i may need to remove this one to one connection between auth and other table

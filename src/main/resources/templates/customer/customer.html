@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${customer.firstName + customer.lastName}">Customer name</title>
+</head>
+<body>
+<h2>Customer Detail</h2>
+Full name: <span th:text="${customer.firstName + customer.lastName}">null Customer full name></span>
+Phone Number: <span th:text="${customer.phoneNumber}"> null phoneNumber</span>
+Account Balance: <span th:text="${customer.accountBalance}"> null accountBalance</span>
+Date-Time Created: <span th:text="${customer.dateTimeCreated}"> null dateTimeCreated</span>
+
+<h2>Customers Orders</h2>
+<ul>
+    <li th:each="order: ${customer.orders}">
+<!--        <span th:text="${order.menus.name}">menu name</span>-->
+        <span th:text="${order.orderStatusId.name}"></span>
+        <span th:text="${order.amountDue}"></span>
+        <span th:text="${order.amountPaid}"></span>
+        <span th:text="${order.amountOutstanding}"></span>
+        <span th:text="${order.dateTimeCreated}"></span>
+    </li>
+</ul>
+
+</body>
+</html>

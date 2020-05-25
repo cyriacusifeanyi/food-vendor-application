@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${orderStatus.name}"> </title>
+</head>
+<body>
+<h2 th:text="${'All '+ orderStatus.name + 'orders'}"></h2>
+
+<table>
+    <thead>
+    <tr>
+        <th>Order id</th>
+        <th>Menus</th>
+        <th>Amount Due</th>
+        <th>Customer Id</th>
+        <th>Time of order</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="order: ${orderStatus.orders}">
+        <td th:text="${order.id}"></td>
+        <td>
+            <table>
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Price</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="menu: ${order.menus}">
+                    <td th:text="${menu.name}"></td>
+                    <td th:text="${menu.price}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+        <td th:text="${order.getAmountDue()}"></td>
+        <td th:text="${order.customerId.id}"></td>
+        <td th:text="${order.dateTimeCreated}"></td>
+        </tr>
+    </tbody>
+
+</table>
+</body>
+</html>

@@ -1,52 +1,87 @@
 package com.venturegardengroup.foodvendorapplication.controllers;
 
+import com.venturegardengroup.foodvendorapplication.models.Customer;
+import com.venturegardengroup.foodvendorapplication.models.Menu;
+import com.venturegardengroup.foodvendorapplication.models.MessageStatus;
 import com.venturegardengroup.foodvendorapplication.models.Notification;
+import com.venturegardengroup.foodvendorapplication.models.Order;
+import com.venturegardengroup.foodvendorapplication.models.OrderStatus;
+import com.venturegardengroup.foodvendorapplication.models.Vendor;
+import com.venturegardengroup.foodvendorapplication.repositories.CustomerRepository;
+import com.venturegardengroup.foodvendorapplication.repositories.MessageStatusRepository;
 import com.venturegardengroup.foodvendorapplication.repositories.NotificationRepository;
-import org.springframework.beans.BeanUtils;
+import com.venturegardengroup.foodvendorapplication.repositories.OrderRepository;
+import com.venturegardengroup.foodvendorapplication.repositories.VendorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 
-@RestController
-@RequestMapping("/notifications")
+//@RestController
+//@RequestMapping("/notifications")
+@Controller
 public class NotificationController {
     @Autowired
     private NotificationRepository notificationRepository;
+    @Autowired
+    private VendorRepository vendorRepository;
+    @Autowired
+    private CustomerRepository customerRepository;
+    @Autowired
+    private OrderRepository orderRepository;
+    @Autowired
+    private MessageStatusRepository messageStatusRepository;
 
-    @GetMapping
-    public List<Notification> list() {
-        return notificationRepository.findAll();
+
+    //    view all
+    @GetMapping("/notifications")
+    public String list(Model model) {
+        model.addAttribute("notifications", notificationRepository.findAll());
+        model.addAttribute("vendors", vendorRepository.findAll());
+        model.addAttribute("customers", customerRepository.findAll());
+        model.addAttribute("orders", orderRepository.findAll());
+        model.addAttribute("messageStatuses", messageStatusRepository.findAll());
+
+        return "notification/notifications";
+    }
+    //    view one
+    @GetMapping("/notifications/{id}")
+    public String getOne(Model model, @PathVariable Long id) {
+        model.addAttribute("notification", notificationRepository.getOne(id));
+        return "notification/notification";
     }
 
-    @GetMapping
-    @RequestMapping("{id}")
-    public Notification get(@PathVariable Long id) {
-        return notificationRepository.getOne(id);
-    }
-    @PostMapping
-//    @ResponseStatus(HttpStatus.CREATED)
-    public Notification create(@RequestBody final Notification notification){
-        return notificationRepository.saveAndFlush(notification);
-    }
-    @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
-    public void delete(@PathVariable Long id) {
-        //Also, need to check for children records before deleting.
-        notificationRepository.deleteById(id);
-    }
+    //    create
+    //vendorId customerId orderId messageStatusId
+    @PostMapping("/notification")
+    public String create(@RequestParam Long vendorId,
+                         @RequestParam Long customerId,
+                         @RequestParam Long orderId,
+                         @RequestParam int messageStatusId,
+                         @RequestParam String message){
+//        int defaultMessageStatusId = 1;
+        Customer customer = customerRepository.getOne(customerId);
+        Vendor vendor = vendorRepository.getOne(vendorId);
+        Order order = orderRepository.getOne(orderId);
+        MessageStatus messageStatus = messageStatusRepository.getOne(messageStatusId);
 
-    @RequestMapping(value = "{id}", method = RequestMethod.PUT)
-    public Notification update(@PathVariable Long id, @RequestBody Notification notification) {
-        //because this is a PUT, we expect all attributes to be passed in. A PATCH would only need...
-        //TODO: Add validation that all attributes are passed in, otherwise return a 400 bad payload
-        Notification existingNotification = notificationRepository.getOne(id);
-        BeanUtils.copyProperties(notification, existingNotification, "notification_id");
-        return notificationRepository.saveAndFlush(existingNotification);
+        Notification newNotification = new Notification(
+                vendor,
+                customer,
+                order,
+                messageStatus,
+                message,
+                LocalDateTime.now()
+        );
+
+        notificationRepository.save(newNotification);
+        return "redirect:/notifications";
     }
 }

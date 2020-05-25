@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${order.id}">order id</title>
+</head>
+<body>
+<h1 th:text="${'Order #' + order.id}">Order #id</h1>
+
+
+<p>Customer name: <span th:text="${order.customerId.fullName}"></span></p>
+<p>Amount due: <span th:text="${order.amountDue}"></span></p>
+<p>Amount paid: <span th:text="${order.amountPaid}"></span></p>
+<p>Amount outstanding: <span th:text="${order.amountOutstanding}"></span></p>
+<p>Order status: <span th:text="${order.orderStatusId.name}"></span></p>
+
+<h2>Menus in order:</h2>
+<p>Menu name:<span></span></p>
+
+<ul>
+    <li th:each="menu: ${order.menus}">
+        <span th:text="${menu.name}">Menu name</span>
+        <span th:text="${menu.price}">Price</span> NGN
+    </li>
+</ul>
+
+<h2>Add Menu to Order</h2>
+
+<form th:action="@{/orders/{orderId}/add-menu/(orderId =${order.id})}" method="POST">
+    <label>Menu of choice:
+        <select name="menuId">
+            <option th:each="menu : ${menus}" th:text="${menu.name}" th:value="${menu.id}">
+                Menu name
+            </option>
+        </select>
+    </label>
+
+    <input type="submit" value="Add Menu"/>
+</form>
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Roles</title>
+</head>
+<body>
+<h1>Roles</h1>
+<ul>
+    <li th:each="role: ${roles}">
+        <a th:href="@{/roles/{id}(id=${role.id})}">
+            <span th:text = "${role.name}">The role name</span>
+        </a>
+    </li>
+</ul>
+
+<h2>Create new role</h2>
+
+<form method="post" th:action="@{/role}">
+    <input type="text" name="name" />
+    <input type="submit" value="Add new role"/>
+</form>
+
+</body>
+</html>

@@ -2,51 +2,39 @@ package com.venturegardengroup.foodvendorapplication.controllers;
 
 import com.venturegardengroup.foodvendorapplication.models.OrderStatus;
 import com.venturegardengroup.foodvendorapplication.repositories.OrderStatusRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
+import java.util.ArrayList;
 
-@RestController
-@RequestMapping("/orderStatuses")
+@Controller
+//@RequestMapping("/orderStatuses")
 public class OrderStatusController {
     @Autowired
     private OrderStatusRepository orderStatusRepository;
 
-    @GetMapping
-    public List<OrderStatus> list() {
-        return orderStatusRepository.findAll();
+    //    view all
+    @GetMapping("/order-statuses")
+    public String list(Model model) {
+        model.addAttribute("orderStatuses", orderStatusRepository.findAll());
+        return "order-status/order-statuses";
+    }
+    //    view one
+    @GetMapping("/order-statuses/{id}")
+    public String getOne(Model model, @PathVariable int id) {
+        model.addAttribute("orderStatus", orderStatusRepository.getOne(id));
+        return "order-status/order-status";
+    }
+    //    add one
+    @PostMapping("/order-status")
+    public String create(@RequestParam String name) {
+        orderStatusRepository.save(new OrderStatus(name, new ArrayList<>()));
+        return "redirect:/order-statuses";
     }
 
-    @GetMapping
-    @RequestMapping("{id}")
-    public OrderStatus get(@PathVariable Long id) {
-        return orderStatusRepository.getOne(id);
-    }
-    @PostMapping
-//    @ResponseStatus(HttpStatus.CREATED)
-    public OrderStatus create(@RequestBody final OrderStatus orderStatus){
-        return orderStatusRepository.saveAndFlush(orderStatus);
-    }
-    @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
-    public void delete(@PathVariable Long id) {
-        //Also, need to check for children records before deleting.
-        orderStatusRepository.deleteById(id);
-    }
-
-    @RequestMapping(value = "{id}", method = RequestMethod.PUT)
-    public OrderStatus update(@PathVariable Long id, @RequestBody OrderStatus orderStatus) {
-        //because this is a PUT, we expect all attributes to be passed in. A PATCH would only need...
-        //TODO: Add validation that all attributes are passed in, otherwise return a 400 bad payload
-        OrderStatus existingOrderStatus = orderStatusRepository.getOne(id);
-        BeanUtils.copyProperties(orderStatus, existingOrderStatus, "orderStatus_id");
-        return orderStatusRepository.saveAndFlush(existingOrderStatus);
-    }
 }

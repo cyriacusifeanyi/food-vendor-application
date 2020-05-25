@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${menu.id}">menu id</title>
+</head>
+<body>
+
+    <h1 th:text="${'Menu #' + menu.id}">Menu #id</h1>
+
+
+    <p>Menu name: <span th:text="${menu.name}"></span></p>
+    <p>Menu description: <span th:text="${menu.description}"></span></p>
+    <p>Price: <span th:text="${menu.price}"></span></p>
+    <p>Quantity: <span th:text="${menu.quantity}"></span></p>
+<!--    <label>-->
+<!--        Quantity: <input type="number" name="quantity" min="1" max="50">-->
+<!--    </label>-->
+    <p>Vendor Name: <span th:text="${menu.vendorId.businessName}"></span></p>
+
+</body>
+</html>

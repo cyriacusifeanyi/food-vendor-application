@@ -1,0 +1,13 @@
+-- INSERT INTO order_status (name) VALUES ('pending')
+-- INSERT INTO order_status (name) VALUES ('in-progress')
+-- INSERT INTO order_status (name) VALUES ('completed')
+-- INSERT INTO order_status (name) VALUES ('canceled')
+--
+-- INSERT INTO message_status (name) VALUES ('sent')
+-- INSERT INTO message_status (name) VALUES ('delivered')
+-- INSERT INTO message_status (name) VALUES ('received')
+-- INSERT INTO message_status (name) VALUES ('read')
+--
+-- INSERT INTO roles (name) VALUES ('vendor')
+-- INSERT INTO roles (name) VALUES ('customer')
+-- INSERT INTO roles (name) VALUES ('admin')

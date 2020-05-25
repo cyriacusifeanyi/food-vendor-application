@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${role.name}">Role name</title>
+</head>
+
+<body>
+<h1 th:text="${role.name}">Role name</h1>
+
+The role auths
+<ul>
+    <li th:each="auth: ${role.auths}">
+        <span th:text="${auth.email}">role email</span>
+        <span th:text="${auth.password}">role password</span>
+    </li>
+</ul>
+
+<h2>Create new Auth</h2>
+<form th:action="@{/roles/{id}/auth(id=${role.id})}" method="POST">
+    <input type="text" name="email"/>
+    <input type="text" name="password"/>
+    <input type="submit" value="Add new Auth"/>
+</form>
+</body>
+</html>

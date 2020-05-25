@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Menu</title>
+    </head>
+    <body>
+        <h1>Menus</h1>
+
+        <ul>
+            <li th:each="menu: ${menus}">
+                <a th:href="@{/menus/{id}(id=${menu.id})}">
+                    <span th:text="${menu.id + ' : ' + menu.name}">s/n : Menu Name</span>
+                    <span th:text="${'#' + menu.price}">#Menu Price</span>
+                </a>
+            </li>
+        </ul>
+
+        <h2>Create Menu</h2>
+        <form th:action="@{/menu}" method="POST">
+            <!--            TODO: later i will change the vendorId value to the current session's vendor id-->
+            <label> Vendor Id:
+                <input type="text" name="vendorId" value="1">
+            </label>
+            <label>Name:
+                <input type="text" name="name">
+            </label>
+            <label>Description:
+                <input type="text" name="description">
+            </label>
+            <label>Price:
+                <input type="number" name="price">
+            </label>
+            <label>Quantity:
+                <input type="number" name="quantity">
+            </label>
+            <fieldset >Recurring:
+                <label>Yes:
+                    <input type="radio" name="isRecurring" value="1">
+                </label>
+                <label>No:
+                    <input type="radio" name="isRecurring" value="0">
+                </label>
+            </fieldset>
+            <label>Frequency of recurrence:
+                <input type="number" name="frequencyOfRecurrence">
+            </label>
+            <input type="submit" value="Add Menu"/>
+        </form>
+
+    </body>
+</html>

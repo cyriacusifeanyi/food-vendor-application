@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>Vendors</h2>
+<ul>
+    <li th:each="vendor: ${vendors}">
+        <a th:href="@{/vendors/{id}(id=${vendor.id})}">
+            Business name: <span th:text = "${vendor.businessName}"></span>
+            Phone number: <span th:text = "${vendor.phoneNumber}"></span>
+        </a>
+    </li>
+</ul>
+
+<h2>Create new Vendor</h2>
+<form method="post" th:action="@{/vendor}">
+    <label>Business name:
+        <input type="text" name="businessName" />
+    </label>
+    <label>Phone number:
+        <input type="text" name="phoneNumber" />
+    </label>
+    <input type="submit" value="Add new Vendor"/>
+</form>
+</body>
+</html>

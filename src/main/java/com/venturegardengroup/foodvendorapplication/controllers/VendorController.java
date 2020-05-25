@@ -1,52 +1,116 @@
 package com.venturegardengroup.foodvendorapplication.controllers;
 
+import com.venturegardengroup.foodvendorapplication.models.Customer;
+import com.venturegardengroup.foodvendorapplication.models.Menu;
+import com.venturegardengroup.foodvendorapplication.models.MessageStatus;
+import com.venturegardengroup.foodvendorapplication.models.Notification;
+import com.venturegardengroup.foodvendorapplication.models.Order;
+import com.venturegardengroup.foodvendorapplication.models.OrderStatus;
+import com.venturegardengroup.foodvendorapplication.models.Role;
 import com.venturegardengroup.foodvendorapplication.models.Vendor;
+import com.venturegardengroup.foodvendorapplication.repositories.CustomerRepository;
+import com.venturegardengroup.foodvendorapplication.repositories.MenuRepository;
+import com.venturegardengroup.foodvendorapplication.repositories.MessageStatusRepository;
+import com.venturegardengroup.foodvendorapplication.repositories.NotificationRepository;
+import com.venturegardengroup.foodvendorapplication.repositories.OrderRepository;
+import com.venturegardengroup.foodvendorapplication.repositories.OrderStatusRepository;
 import com.venturegardengroup.foodvendorapplication.repositories.VendorRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-@RestController
-@RequestMapping("/vendors")
+//@RestController
+//@RequestMapping("/vendors")
+@Controller
 public class VendorController {
     @Autowired
     private VendorRepository vendorRepository;
+    @Autowired
+    private MenuRepository menuRepository;
+    @Autowired
+    private NotificationRepository notificationRepository;
+    @Autowired
+    private OrderStatusRepository orderStatusRepository;
+    @Autowired
+    private OrderRepository orderRepository;
+    @Autowired
+    private CustomerRepository customerRepository;
+    @Autowired
+    private MessageStatusRepository messageStatusRepository;
 
-    @GetMapping
-    public List<Vendor> list() {
-        return vendorRepository.findAll();
-    }
-
-    @GetMapping
-    @RequestMapping("{id}")
-    public Vendor get(@PathVariable Long id) {
-        return vendorRepository.getOne(id);
-    }
-    @PostMapping
-//    @ResponseStatus(HttpStatus.CREATED)
-    public Vendor create(@RequestBody final Vendor vendor){
-        return vendorRepository.saveAndFlush(vendor);
-    }
-    @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
-    public void delete(@PathVariable Long id) {
-        //Also, need to check for children records before deleting.
-        vendorRepository.deleteById(id);
+    @GetMapping("/vendors")
+    public String list(Model model) {
+        model.addAttribute("vendors", vendorRepository.findAll());
+        return "vendor/vendors";
     }
 
-    @RequestMapping(value = "{id}", method = RequestMethod.PUT)
-    public Vendor update(@PathVariable Long id, @RequestBody Vendor vendor) {
-        //because this is a PUT, we expect all attributes to be passed in. A PATCH would only need...
-        //TODO: Add validation that all attributes are passed in, otherwise return a 400 bad payload
-        Vendor existingVendor = vendorRepository.getOne(id);
-        BeanUtils.copyProperties(vendor, existingVendor, "vendor_id");
-        return vendorRepository.saveAndFlush(existingVendor);
+    @PostMapping("/vendor")
+    public String create(@RequestParam String businessName,
+                         @RequestParam String phoneNumber){
+        vendorRepository.save(new Vendor(
+                businessName, phoneNumber,
+                new ArrayList<>(),
+                new ArrayList<>(),
+                LocalDateTime.now()));
+        return "redirect:/vendors";
     }
+
+    @GetMapping("/vendors/{id}")
+    public String getOne(Model model, @PathVariable Long id) {
+        model.addAttribute("vendor", vendorRepository.getOne(id));
+        return "vendor/vendor";
+    }
+
+
+
+
+    //    generate daily sales report
+    @PostMapping("/vendors/{id}/daily-sales-report")
+    public String generateDailySalesReport(Model model,
+                                           @PathVariable Long id){
+//        get all orders
+        List<Order> currentOrder = orderRepository.findAll();
+//        with vendorId = {id}
+
+//        same date as today
+
+        model.addAttribute("salesReport", notificationRepository.findAll());
+        return "";
+    }
+
+    //    send notification/create notification
+    @PostMapping("/vendor/{id}/notification")
+    public String notify(@PathVariable Long id,
+                            @RequestParam Long customerId,
+                            @RequestParam Long orderId,
+                            @RequestParam int messageStatusId,
+                            @RequestParam String message){
+
+        Vendor vendor = vendorRepository.getOne(id);
+        Customer customer = customerRepository.getOne(customerId);
+        Order order = orderRepository.getOne(orderId);
+        MessageStatus messageStatus = messageStatusRepository.getOne(messageStatusId);
+
+        Notification newNotification = new Notification(
+                vendor,
+                customer,
+                order,
+                messageStatus,
+                message,
+                LocalDateTime.now()
+        );
+        notificationRepository.save(newNotification);
+        return "redirect:/vendors/" + id;
+    }
+
 }
