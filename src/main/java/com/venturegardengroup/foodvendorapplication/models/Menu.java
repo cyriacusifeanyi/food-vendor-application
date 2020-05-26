@@ -1,5 +1,6 @@
 package com.venturegardengroup.foodvendorapplication.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -24,6 +25,7 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 @Table(name = "menus")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Menu extends AbstractPersistable<Long> {
 
     @Column(name = "name")

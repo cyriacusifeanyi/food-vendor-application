@@ -1,5 +1,6 @@
 package com.venturegardengroup.foodvendorapplication.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -19,7 +20,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Data
 @Table(name = "notifications")
-//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class  Notification extends AbstractPersistable<Long> {
     @ManyToOne
     private Vendor vendorId;

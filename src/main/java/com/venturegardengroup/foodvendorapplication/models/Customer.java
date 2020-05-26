@@ -1,5 +1,6 @@
 package com.venturegardengroup.foodvendorapplication.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -21,6 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 @Table(name = "customers")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Customer extends AbstractPersistable<Long> {
     @Column(name = "first_name")
     private String firstName;
@@ -31,9 +33,6 @@ public class Customer extends AbstractPersistable<Long> {
     @Column(name = "account_balance")
     private BigDecimal accountBalance = new BigDecimal(0);
 
-//    @OneToOne(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "auth_id", referencedColumnName = "id")
-//    private Auth auth;
     @OneToMany(mappedBy = "customerId")
     private List<Order> orders = new ArrayList<>();
     @OneToMany(mappedBy = "customerId")
@@ -41,7 +40,6 @@ public class Customer extends AbstractPersistable<Long> {
 
     @Column(name = "date_time_created")
     private LocalDateTime dateTimeCreated;
-
 
     public String getFullName() {
         return getFirstName() + " " + getLastName();

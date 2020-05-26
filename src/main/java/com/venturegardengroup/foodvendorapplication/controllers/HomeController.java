@@ -11,7 +11,6 @@ import java.util.Map;
 
 @RestController
 //@BasePathAwareController
-//@Controller
 public class HomeController {
     @Value("${app.version}")
     private String appVersion;

@@ -6,28 +6,33 @@ import com.venturegardengroup.foodvendorapplication.models.MessageStatus;
 import com.venturegardengroup.foodvendorapplication.models.Notification;
 import com.venturegardengroup.foodvendorapplication.models.Order;
 import com.venturegardengroup.foodvendorapplication.models.OrderStatus;
+import com.venturegardengroup.foodvendorapplication.models.Vendor;
 import com.venturegardengroup.foodvendorapplication.repositories.CustomerRepository;
 import com.venturegardengroup.foodvendorapplication.repositories.MenuRepository;
 import com.venturegardengroup.foodvendorapplication.repositories.MessageStatusRepository;
 import com.venturegardengroup.foodvendorapplication.repositories.NotificationRepository;
 import com.venturegardengroup.foodvendorapplication.repositories.OrderRepository;
 import com.venturegardengroup.foodvendorapplication.repositories.OrderStatusRepository;
+import com.venturegardengroup.foodvendorapplication.repositories.VendorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-//@RestController
-//@RequestMapping("/customers")
-@Controller
+@RestController
+@RequestMapping("/customers")
 public class CustomerController {
     @Autowired
     private CustomerRepository customerRepository;
@@ -41,63 +46,85 @@ public class CustomerController {
     private MenuRepository menuRepository;
     @Autowired
     private OrderStatusRepository orderStatusRepository;
+    @Autowired
+    private VendorRepository vendorRepository;
 
-//this controller creates customers, orders
-//this controller can view associated notifications
-//this controller can change notification status to READ
 
-    @GetMapping("/customers")
-    public String list(Model model) {
-        model.addAttribute("customers", customerRepository.findAll());
-        return "customer/customers";
+    @GetMapping()
+    public List<Customer> list() {
+        return customerRepository.findAll();
     }
 
-    @PostMapping("/customer")
-    public String create(
+    @GetMapping("{id}")
+    public Customer getOne(@PathVariable Long id) {
+        return customerRepository.getOne(id);
+    }
+
+    @PostMapping()
+    public Customer create(
             @RequestParam String firstName,
             @RequestParam String lastName,
             @RequestParam String phoneNumber,
-//            @RequestParam Auth auth,
             @RequestParam BigDecimal accountBalance) {
 
-        customerRepository.save(new Customer(
+        Customer newCustomer = new Customer(
                 firstName, lastName, phoneNumber,
                 accountBalance,
                 new ArrayList<>(),
                 new ArrayList<>(),
-                LocalDateTime.now()));
-        return "redirect:/customers";
+                LocalDateTime.now());
+
+        return customerRepository.save(newCustomer);
     }
 
-    @GetMapping("/customers/{id}")
-    public String getOne(Model model, @PathVariable Long id) {
-        model.addAttribute("customer", customerRepository.getOne(id));
-        return "customer/customer";
+    //    used by only customer
+    @Transactional
+    @PostMapping("{id}/orders")
+    public Order createOrder(@PathVariable Long id,
+                         @RequestParam Long menuId,
+                         @RequestParam int orderStatusId,
+                         @RequestParam BigDecimal amountDue,
+                         @RequestParam BigDecimal amountPaid,
+                         @RequestParam BigDecimal amountOutstanding){
+
+        Customer customer = customerRepository.getOne(id);
+        Vendor vendor = vendorRepository.getOne(id);
+        Menu menu = menuRepository.getOne(menuId);
+
+        OrderStatus orderStatus = orderStatusRepository.getOne(orderStatusId);
+
+        Order newOrder = new Order(
+                customer,
+                vendor,
+                orderStatus,
+                new ArrayList<>(),
+                amountDue,
+                amountPaid,
+                amountOutstanding,
+                LocalDate.now(),
+                LocalTime.now()
+        );
+        newOrder.getMenus().add(menu);
+
+        return orderRepository.save(newOrder);
     }
-
-//    new order moved to orderController
-
 
     //this controller can view associated notifications
 //    unstable
-    @GetMapping("/notifications/customer/{id}")
-    public String getCustomerNotification(Model model, @PathVariable Long id) {
-//        query/find by customer id -> notificationRepository
-        model.addAttribute("auth", notificationRepository.findAll());
-        return "notification/notifications";
+    @GetMapping("{id}/notifications")
+    public List<Notification> getCustomerNotification(@PathVariable Long id) {
+
+        return notificationRepository.findByCustomerId(getOne(id));
     }
 
-    //this controller can change notification status to READ
-//    method is PUT / PATCH
-    @PostMapping("/customers/{customerId}/notifications/{notificationId}")
-    public String updateNotificationStatus(@PathVariable Long customerId,
+    @PostMapping("{customerId}/notifications/{notificationId}")
+    public Notification updateNotificationStatus(@PathVariable Long customerId,
                                            @PathVariable Long notificationId,
-                                           @RequestParam int messageStatusId){
-        Notification currentNotification = notificationRepository.getOne(notificationId);
+                                           @RequestBody int messageStatusId){
+        Notification existingNotification = notificationRepository.getOne(notificationId);
         MessageStatus newMessageStatus = messageStatusRepository.getOne(messageStatusId);
-        currentNotification.setMessageStatusId(newMessageStatus);
-        notificationRepository.save(currentNotification);
-        return "redirect:/customers/" + customerId;
+        existingNotification.setMessageStatusId(newMessageStatus);
+        return notificationRepository.saveAndFlush(existingNotification);
     }
 
 
