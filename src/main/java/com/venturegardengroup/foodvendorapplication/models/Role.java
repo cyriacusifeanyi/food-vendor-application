@@ -13,7 +13,7 @@ import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 
-//@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor

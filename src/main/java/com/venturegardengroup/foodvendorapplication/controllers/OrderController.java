@@ -9,6 +9,7 @@ import com.venturegardengroup.foodvendorapplication.repositories.MenuRepository;
 import com.venturegardengroup.foodvendorapplication.repositories.NotificationRepository;
 import com.venturegardengroup.foodvendorapplication.repositories.OrderRepository;
 import com.venturegardengroup.foodvendorapplication.repositories.OrderStatusRepository;
+import com.venturegardengroup.foodvendorapplication.services.OrderingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,9 @@ public class OrderController {
     private CustomerRepository customerRepository;
     @Autowired
     private OrderStatusRepository orderStatusRepository;
+
+//    @Autowired
+//    private OrderingService orderingService;
 
 
     //    view all

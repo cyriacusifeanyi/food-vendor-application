@@ -16,6 +16,7 @@ import com.venturegardengroup.foodvendorapplication.repositories.OrderRepository
 import com.venturegardengroup.foodvendorapplication.repositories.OrderStatusRepository;
 import com.venturegardengroup.foodvendorapplication.repositories.VendorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -89,6 +90,7 @@ public class VendorController {
     }
 
     //    send notification/create notification
+    @Secured("ADMIN")
     @PostMapping("/vendor/{id}/notification")
     public String notify(@PathVariable Long id,
                             @RequestParam Long customerId,

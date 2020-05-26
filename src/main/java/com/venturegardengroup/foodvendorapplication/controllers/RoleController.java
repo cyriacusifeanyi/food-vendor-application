@@ -24,18 +24,21 @@ public class RoleController {
     @GetMapping("/roles")
     public String list(Model model) {
         model.addAttribute("roles", roleRepository.findAll());
+
         return "auth/roles";
     }
 
     @PostMapping("/role")
     public String create(@RequestParam String name) {
         roleRepository.save(new Role(name, new ArrayList<>()));
+
         return "redirect:/roles";
     }
 
     @GetMapping("/roles/{id}")
     public String getOne(Model model, @PathVariable int id) {
         model.addAttribute("role", roleRepository.getOne(id));
+
         return "auth/role";
     }
 
@@ -49,6 +52,7 @@ public class RoleController {
                 password,
                 role);
         authRepository.save(auth);
+
         return "redirect:/roles/" + id;
     }
 

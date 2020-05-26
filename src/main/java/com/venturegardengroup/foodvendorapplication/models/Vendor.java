@@ -19,7 +19,7 @@ import java.util.Date;
 import java.util.List;
 
 
-//@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor

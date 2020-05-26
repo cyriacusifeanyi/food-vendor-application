@@ -15,7 +15,7 @@ import java.util.List;
 
 //@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 
-//@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
