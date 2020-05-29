@@ -1,63 +1,44 @@
 package com.venturegardengroup.foodvendorapplication.controllers;
 
 import com.venturegardengroup.foodvendorapplication.models.Customer;
-import com.venturegardengroup.foodvendorapplication.models.Menu;
-import com.venturegardengroup.foodvendorapplication.models.MessageStatus;
 import com.venturegardengroup.foodvendorapplication.models.Notification;
 import com.venturegardengroup.foodvendorapplication.models.Order;
-import com.venturegardengroup.foodvendorapplication.models.OrderStatus;
-import com.venturegardengroup.foodvendorapplication.models.Vendor;
-import com.venturegardengroup.foodvendorapplication.repositories.CustomerRepository;
-import com.venturegardengroup.foodvendorapplication.repositories.MenuRepository;
-import com.venturegardengroup.foodvendorapplication.repositories.MessageStatusRepository;
-import com.venturegardengroup.foodvendorapplication.repositories.NotificationRepository;
-import com.venturegardengroup.foodvendorapplication.repositories.OrderRepository;
-import com.venturegardengroup.foodvendorapplication.repositories.OrderStatusRepository;
-import com.venturegardengroup.foodvendorapplication.repositories.VendorRepository;
+import com.venturegardengroup.foodvendorapplication.services.CustomerService;
+import com.venturegardengroup.foodvendorapplication.services.NotificationService;
+import com.venturegardengroup.foodvendorapplication.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/customers")
 public class CustomerController {
-    @Autowired
-    private CustomerRepository customerRepository;
-    @Autowired
-    private OrderRepository orderRepository;
-    @Autowired
-    private NotificationRepository notificationRepository;
-    @Autowired
-    private MessageStatusRepository messageStatusRepository;
-    @Autowired
-    private MenuRepository menuRepository;
-    @Autowired
-    private OrderStatusRepository orderStatusRepository;
-    @Autowired
-    private VendorRepository vendorRepository;
 
+    @Autowired
+    private NotificationService notificationService;
+    @Autowired
+    private CustomerService customerService;
+    @Autowired
+    private OrderService orderService;
 
     @GetMapping()
     public List<Customer> list() {
-        return customerRepository.findAll();
+        return customerService.list();
     }
 
     @GetMapping("{id}")
     public Customer getOne(@PathVariable Long id) {
-        return customerRepository.getOne(id);
+        return customerService.getOne(id);
     }
 
     @PostMapping()
@@ -66,66 +47,60 @@ public class CustomerController {
             @RequestParam String lastName,
             @RequestParam String phoneNumber,
             @RequestParam BigDecimal accountBalance) {
-
-        Customer newCustomer = new Customer(
-                firstName, lastName, phoneNumber,
-                accountBalance,
-                new ArrayList<>(),
-                new ArrayList<>(),
-                LocalDateTime.now());
-
-        return customerRepository.save(newCustomer);
+        return customerService.create(firstName, lastName, phoneNumber, accountBalance);
     }
 
     //    used by only customer
-    @Transactional
     @PostMapping("{id}/orders")
     public Order createOrder(@PathVariable Long id,
-                         @RequestParam Long menuId,
-                         @RequestParam int orderStatusId,
-                         @RequestParam BigDecimal amountDue,
-                         @RequestParam BigDecimal amountPaid,
-                         @RequestParam BigDecimal amountOutstanding){
+                             @RequestParam Long menuId,
+                             @RequestParam int orderStatusId,
+                             @RequestParam BigDecimal amountPaid){
 
-        Customer customer = customerRepository.getOne(id);
-        Vendor vendor = vendorRepository.getOne(id);
-        Menu menu = menuRepository.getOne(menuId);
+        Customer customer = this.getOne(id);
+        return this.orderService.create(customer, menuId,
+                orderStatusId,amountPaid);
+    }
 
-        OrderStatus orderStatus = orderStatusRepository.getOne(orderStatusId);
+    //    PATCH order
+    @RequestMapping(value = "{id}/orders/{orderId}", method = RequestMethod.PATCH)
+    public @ResponseBody Order updateOrder(@PathVariable Long id,
+                                           @PathVariable Long orderId,
+                                           @RequestBody Order order) {
+        Customer customer = this.getOne(id);
+        return this.orderService.update(customer, orderId, order);
+    }
 
-        Order newOrder = new Order(
-                customer,
-                vendor,
-                orderStatus,
-                new ArrayList<>(),
-                amountDue,
-                amountPaid,
-                amountOutstanding,
-                LocalDate.now(),
-                LocalTime.now()
-        );
-        newOrder.getMenus().add(menu);
+    //    DELETE order
+    @RequestMapping(value = "{id}/orders/{orderId}", method = RequestMethod.DELETE)
+    public @ResponseBody void cancelOrder(@PathVariable Long id,
+                                          @PathVariable Long orderId) {
+        Customer customer = this.getOne(id);
+        this.orderService.cancel(customer, orderId);
+    }
 
-        return orderRepository.save(newOrder);
+    /*add a menu to order*/
+    @PostMapping("orders/{id}/menus/{menuId}")
+    public @ResponseBody Order addMenuToOrder(@PathVariable Long id,
+                                              @PathVariable Long menuId){
+        return orderService.addMenuToOrder(id, menuId);
     }
 
     //this controller can view associated notifications
-//    unstable
     @GetMapping("{id}/notifications")
     public List<Notification> getCustomerNotification(@PathVariable Long id) {
-
-        return notificationRepository.findByCustomerId(getOne(id));
+        return this.notificationService.findByCustomerId(getOne(id));
     }
 
-    @PostMapping("{customerId}/notifications/{notificationId}")
-    public Notification updateNotificationStatus(@PathVariable Long customerId,
-                                           @PathVariable Long notificationId,
-                                           @RequestBody int messageStatusId){
-        Notification existingNotification = notificationRepository.getOne(notificationId);
-        MessageStatus newMessageStatus = messageStatusRepository.getOne(messageStatusId);
-        existingNotification.setMessageStatusId(newMessageStatus);
-        return notificationRepository.saveAndFlush(existingNotification);
+    //    use it too for updating NotificationStatus
+    @RequestMapping(value = "{id}/notification/{notificationId}/notification-status/{notificationStatusId}",
+            method = RequestMethod.PATCH)
+    public @ResponseBody Notification updateNotificationNotificationStatusId(
+            @PathVariable Long id,
+            @PathVariable Long notificationId,
+            @PathVariable int notificationStatusId){
+        Customer customer = this.getOne(id);
+        return this.notificationService.updateNotificationStatusId(customer, notificationId, notificationStatusId);
     }
-
 
 }

@@ -1,5 +1,6 @@
 package com.venturegardengroup.foodvendorapplication.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,21 +16,20 @@ import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
 
-//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Table(name = "message_statuses")
+@Table(name = "notification_statuses")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class  MessageStatus extends AbstractPersistable<Integer> {
-//how do i initialize this table with values like "sent", "delivered", "read",
+public class NotificationStatus extends AbstractPersistable<Integer> {
+
     @NotEmpty
     @Column(name = "name")
     private String name;
-    @OneToMany(mappedBy = "messageStatusId")
+    @OneToMany(mappedBy = "notificationStatusId")
+    @JsonIgnore
     private List<Notification> notifications = new ArrayList<>();
 
 }

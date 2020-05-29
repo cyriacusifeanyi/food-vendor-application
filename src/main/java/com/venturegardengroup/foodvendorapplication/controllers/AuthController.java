@@ -1,59 +1,44 @@
 package com.venturegardengroup.foodvendorapplication.controllers;
 
 import com.venturegardengroup.foodvendorapplication.models.Auth;
-import com.venturegardengroup.foodvendorapplication.models.Customer;
 import com.venturegardengroup.foodvendorapplication.models.Role;
-import com.venturegardengroup.foodvendorapplication.models.Vendor;
-import com.venturegardengroup.foodvendorapplication.repositories.AuthRepository;
-import com.venturegardengroup.foodvendorapplication.repositories.CustomerRepository;
-import com.venturegardengroup.foodvendorapplication.repositories.RoleRepository;
-import org.springframework.beans.BeanUtils;
+import com.venturegardengroup.foodvendorapplication.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/auths")
+//@BasePathAwareController
 public class AuthController {
+
     @Autowired
-    private AuthRepository authRepository;
+    private AuthService authService;
 
     @GetMapping()
-    public List<Auth> list() {
-        return authRepository.findAll();
+    public @ResponseBody List<Auth> list() {
+        return this.authService.list();
     }
 
     @GetMapping("{id}")
-    public Auth getOne(Model model, @PathVariable Long id) {
-        return authRepository.getOne(id);
+    public Auth getOne(@PathVariable Long id) {
+        return this.authService.getOne(id);
     }
 
-    @Transactional
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     public void delete(@PathVariable Long id) {
-        authRepository.deleteById(id);
+        this.authService.delete(id);
     }
 
-    @Transactional
-    @RequestMapping(value = "{id}", method = RequestMethod.PUT)
-    public Auth update(@PathVariable long id, @RequestBody Auth auth) {
-
-        Auth existingAuth = authRepository.getOne(id);
-        BeanUtils.copyProperties(auth, existingAuth, "id");
-        return authRepository.saveAndFlush(existingAuth);
+    @GetMapping("{id}/role")
+    public Role getRole(@PathVariable Long id){
+        return this.authService.getRole(id);
     }
-
 
 }

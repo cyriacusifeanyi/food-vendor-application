@@ -1,5 +1,6 @@
 package com.venturegardengroup.foodvendorapplication.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,14 +35,13 @@ public class Customer extends AbstractPersistable<Long> {
     private BigDecimal accountBalance = new BigDecimal(0);
 
     @OneToMany(mappedBy = "customerId")
+    @JsonIgnore
     private List<Order> orders = new ArrayList<>();
     @OneToMany(mappedBy = "customerId")
+    @JsonIgnore
     private List<Notification> notifications = new ArrayList<>();
 
     @Column(name = "date_time_created")
     private LocalDateTime dateTimeCreated;
 
-    public String getFullName() {
-        return getFirstName() + " " + getLastName();
-    }
 }

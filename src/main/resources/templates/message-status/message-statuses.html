@@ -7,10 +7,10 @@
 <body>
 <h2>Message Status List</h2>
 <ul>
-    <li th:each="messageStatus: ${messageStatuses}">
-        <a th:href="@{/message-statuses/{id}(id=${messageStatus.id})}">
-            Id: <span th:text = "${messageStatus.id}"></span>
-            Name: <span th:text = "${messageStatus.name}"></span>
+    <li th:each="notificationStatus: ${messageStatuses}">
+        <a th:href="@{/message-statuses/{id}(id=${notificationStatus.id})}">
+            Id: <span th:text = "${notificationStatus.id}"></span>
+            Name: <span th:text = "${notificationStatus.name}"></span>
         </a>
     </li>
 </ul>

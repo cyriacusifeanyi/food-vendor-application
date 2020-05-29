@@ -1,5 +1,6 @@
 package com.venturegardengroup.foodvendorapplication.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,6 +29,7 @@ public class  Role extends AbstractPersistable<Integer> {
     @Column(name = "name")
     private String name;
     @OneToMany(mappedBy = "roleId")
+    @JsonIgnore
     private List<Auth> auths = new ArrayList<>();
 
 }

@@ -12,6 +12,7 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
     void deleteOrderByOrderStatusId(OrderStatus orderStatusId);
 
     List<Order> findByVendorIdAndDateCreated(Vendor vendorId, LocalDate dateCreated);
-
+    List<Order> findAllByOrderStatusId(OrderStatus orderStatusId);
+    List<Order> findByVendorId(Vendor vendorId);
 
 }

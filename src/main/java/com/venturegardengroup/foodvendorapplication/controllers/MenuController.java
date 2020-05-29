@@ -1,62 +1,34 @@
 package com.venturegardengroup.foodvendorapplication.controllers;
 
 import com.venturegardengroup.foodvendorapplication.models.Menu;
-import com.venturegardengroup.foodvendorapplication.models.Order;
-import com.venturegardengroup.foodvendorapplication.models.Role;
-import com.venturegardengroup.foodvendorapplication.models.Vendor;
 import com.venturegardengroup.foodvendorapplication.repositories.MenuRepository;
 import com.venturegardengroup.foodvendorapplication.repositories.OrderRepository;
 import com.venturegardengroup.foodvendorapplication.repositories.VendorRepository;
-import org.springframework.beans.BeanUtils;
+import com.venturegardengroup.foodvendorapplication.services.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/menus")
 public class MenuController {
-    @Autowired
-    private MenuRepository menuRepository;
-    @Autowired
-    private OrderRepository orderRepository;
-    @Autowired
-    private VendorRepository vendorRepository;
 
+    @Autowired
+    private MenuService menuService;
     //    view all
     @GetMapping()
-    public List<Menu> list() {
-        return menuRepository.findAll();
+    public @ResponseBody List<Menu> list() {
+        return this.menuService.list();
     }
-
     //    view one
     @GetMapping("{id}")
-    public Menu getOne(@PathVariable Long id) {
-        return menuRepository.getOne(id);
-    }
-
-    @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
-    public void delete(@PathVariable Long id) {
-//
-    }
-
-    @RequestMapping(value = "{id}", method = RequestMethod.PUT)
-    public Menu update(@PathVariable Long id, @RequestBody Menu menu) {
-
-        Menu existingMenu = menuRepository.getOne(id);
-        BeanUtils.copyProperties(menu, existingMenu, "id");
-        return menuRepository.saveAndFlush(existingMenu);
+    public @ResponseBody Menu getOne(@PathVariable Long id) {
+        return this.menuService.getOne(id);
     }
 
 }

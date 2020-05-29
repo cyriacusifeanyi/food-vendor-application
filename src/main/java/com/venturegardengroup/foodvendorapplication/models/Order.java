@@ -16,7 +16,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,16 +42,6 @@ public class  Order extends AbstractPersistable<Long> {
             inverseJoinColumns = @JoinColumn(name = "menu_id"))
     private List<Menu> menus = new ArrayList<>();
 
-//    public void addMenu(Menu menu){
-//        this.menus.add(menu);
-//        menu.getOrders().add(this);
-//    }
-//
-//    public void removeMenu(Menu menu){
-//        this.menus.remove(menu);
-//        menu.getOrders().remove(this);
-//    }
-
     //    @Column(name = "description")
 //    private String description;
     @Column(name = "amount_due")
@@ -65,7 +54,6 @@ public class  Order extends AbstractPersistable<Long> {
     private LocalDate dateCreated;
     @Column(name = "time_created")
     private LocalTime timeCreated;
-
 
 
     public BigDecimal getAmountDue() {

@@ -13,33 +13,40 @@
 	<version>2.0.0</version>
 	<name>food-vendor-application</name>
 	<description>Food Vendor Application - VGG Virtual Internship Project</description>
+	<developers>
+		<developer>
+			<name>Cyriacus Ifeanyi Valentine</name>
+			<email>cyriacusifeanyi@gmail.com</email>
+		</developer>
+	</developers>
 
 	<properties>
 		<java.version>1.8</java.version>
 	</properties>
 
 	<dependencies>
-		<!--		for base-path (will come in handy when versioning API)-->
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-rest-webmvc</artifactId>
-			<version>3.2.7.RELEASE</version>
-		</dependency>
+
+		<!--		&lt;!&ndash;		for base-path (will come in handy when versioning API)&ndash;&gt;-->
+		<!--		<dependency>-->
+		<!--			<groupId>org.springframework.data</groupId>-->
+		<!--			<artifactId>spring-data-rest-webmvc</artifactId>-->
+		<!--			<version>3.2.7.RELEASE</version>-->
+		<!--		</dependency>-->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 
-<!--		<dependency>-->
-<!--			<groupId>org.springframework.boot</groupId>-->
-<!--			<artifactId>spring-boot-starter-security</artifactId>-->
-<!--		</dependency>-->
+		<!--		<dependency>-->
+		<!--			<groupId>org.springframework.boot</groupId>-->
+		<!--			<artifactId>spring-boot-starter-security</artifactId>-->
+		<!--		</dependency>-->
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-thymeleaf</artifactId>
-		</dependency>
+		<!--		<dependency>-->
+		<!--			<groupId>org.springframework.boot</groupId>-->
+		<!--			<artifactId>spring-boot-starter-thymeleaf</artifactId>-->
+		<!--		</dependency>-->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -82,13 +89,14 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>19.0.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <!--		<dependency>-->
+
+		<dependency>
+			<groupId>org.jetbrains</groupId>
+			<artifactId>annotations</artifactId>
+			<version>19.0.0</version>
+			<scope>compile</scope>
+		</dependency>
+		<!--		<dependency>-->
 		<!--			<groupId>org.springframework.security</groupId>-->
 		<!--			<artifactId>spring-security-test</artifactId>-->
 		<!--			<scope>test</scope>-->

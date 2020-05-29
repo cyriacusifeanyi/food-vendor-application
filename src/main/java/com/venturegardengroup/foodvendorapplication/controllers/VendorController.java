@@ -1,143 +1,140 @@
 package com.venturegardengroup.foodvendorapplication.controllers;
 
-import com.venturegardengroup.foodvendorapplication.models.Customer;
 import com.venturegardengroup.foodvendorapplication.models.Menu;
-import com.venturegardengroup.foodvendorapplication.models.MessageStatus;
 import com.venturegardengroup.foodvendorapplication.models.Notification;
 import com.venturegardengroup.foodvendorapplication.models.Order;
 import com.venturegardengroup.foodvendorapplication.models.Vendor;
-import com.venturegardengroup.foodvendorapplication.repositories.CustomerRepository;
-import com.venturegardengroup.foodvendorapplication.repositories.MenuRepository;
-import com.venturegardengroup.foodvendorapplication.repositories.MessageStatusRepository;
-import com.venturegardengroup.foodvendorapplication.repositories.NotificationRepository;
-import com.venturegardengroup.foodvendorapplication.repositories.OrderRepository;
-import com.venturegardengroup.foodvendorapplication.repositories.OrderStatusRepository;
-import com.venturegardengroup.foodvendorapplication.repositories.VendorRepository;
+import com.venturegardengroup.foodvendorapplication.services.MenuService;
+import com.venturegardengroup.foodvendorapplication.services.NotificationService;
+import com.venturegardengroup.foodvendorapplication.services.OrderService;
+import com.venturegardengroup.foodvendorapplication.services.SalesService;
+import com.venturegardengroup.foodvendorapplication.services.VendorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @RestController
 @RequestMapping("/vendors")
+//@BasePathAwareController
 public class VendorController {
     @Autowired
-    private VendorRepository vendorRepository;
+    private VendorService vendorService;
     @Autowired
-    private MenuRepository menuRepository;
+    private NotificationService notificationService;
     @Autowired
-    private NotificationRepository notificationRepository;
+    private OrderService orderService;
     @Autowired
-    private OrderRepository orderRepository;
+    private SalesService salesService;
     @Autowired
-    private CustomerRepository customerRepository;
-    @Autowired
-    private MessageStatusRepository messageStatusRepository;
+    private MenuService menuService;
 
     @GetMapping()
     public List<Vendor> list() {
-        return vendorRepository.findAll();
+        return this.vendorService.list();
     }
 
     @GetMapping("{id}")
     public Vendor getOne(@PathVariable Long id) {
-        return vendorRepository.getOne(id);
+        return this.vendorService.getOne(id);
     }
 
     @PostMapping()
     public Vendor create(@RequestParam String businessName,
                          @RequestParam String phoneNumber){
-
-        Vendor newVendor = new Vendor(
-                businessName, phoneNumber,
-                new ArrayList<>(),
-                new ArrayList<>(),
-                new ArrayList<>(),
-                LocalDateTime.now());
-        return vendorRepository.save(newVendor);
+        return this.vendorService.create(businessName, phoneNumber);
     }
 
-    //    generate daily sales report
-    @PostMapping("{id}/daily-sales-report")
-    public List<List<String>> generateDailySalesReport(@PathVariable Long id){
-        List<Order> todayOrder = orderRepository.findByVendorIdAndDateCreated(
-                getOne(id),
-                LocalDate.now());
-
-        List<List<String>> salesReport =new ArrayList<>();
-        int j = 0;
-        for (Order order:todayOrder) {
-            List<String> list1 =new ArrayList<>();
-            int i =0;
-
-            for (Menu menu: order.getMenus()){
-                list1.add(i, menu.getName());
-                list1.add(i, String.valueOf(menu.getPrice()));
-                list1.add(i, menu.getDescription());
-                i++;
-            }
-
-            salesReport.add(j, list1);
-            salesReport.add(j, Collections.singletonList(order.getAmountDue().toString()));
-            salesReport.add(j, Collections.singletonList(order.getAmountOutstanding().toString()));
-            salesReport.add(j, Collections.singletonList(order.getVendorId().getBusinessName()));
-            j++;
-        }
-
-        return salesReport;
+    /*generate daily sales report using the order resources*/
+    @GetMapping("{id}/daily-sales-report")
+    public @ResponseBody List<List<String>> generateDailySalesReport(@PathVariable Long id){
+        return this.salesService.generateVendorDailySalesReport(id);
     }
 
-    //    send notification/create notification
+    /*sending notification using notification related resources*/
     @PostMapping("{id}/notifications")
-    public Notification sendNotification(@PathVariable Long id,
-                                         @RequestParam Long customerId,
-                                         @RequestParam Long orderId,
-                                         @RequestParam int messageStatusId,
-                                         @RequestParam String message){
-
-        Vendor vendor = getOne(id);
-        Customer customer = customerRepository.getOne(customerId);
-        Order order = orderRepository.getOne(orderId);
-        MessageStatus messageStatus = messageStatusRepository.getOne(messageStatusId);
-
-        Notification newNotification = new Notification(
-                vendor,
-                customer,
-                order,
-                messageStatus,
-                message,
-                LocalDateTime.now()
-        );
-        return notificationRepository.save(newNotification);
+    public @ResponseBody Notification sendNotification(@PathVariable Long id,
+                                                       @RequestParam Long orderId,
+                                                       @RequestParam int notificationStatusId,
+                                                       @RequestParam String message){
+        Vendor vendor = this.getOne(id);
+        return this.notificationService.createNotification(vendor,
+                orderId, notificationStatusId, message);
+    }
+    /*PATCH notification*/
+    @RequestMapping(value = "{id}/notifications/{notificationId}", method = RequestMethod.PATCH)
+    public @ResponseBody Notification updateNotification(@PathVariable Long id,
+                                                         @PathVariable Long notificationId,
+                                                         @RequestParam String message){
+        Vendor vendor = this.getOne(id);
+        return this.notificationService.updateNotification(
+                vendor, notificationId, message);
     }
 
+    /*Handling Menu related resources */
     @PostMapping("{id}/menus")
-    public Menu createMenu(@PathVariable Long id,
-                           @RequestParam String name,
-                           @RequestParam String description,
-                           @RequestParam BigDecimal price,
-                           @RequestParam int quantity,
-                           @RequestParam boolean isRecurring,
-                           @RequestParam int frequencyOfRecurrence){
+    public @ResponseBody Menu createMenu(@PathVariable Long id,
+                                         @RequestParam String name,
+                                         @RequestParam String description,
+                                         @RequestParam BigDecimal price,
+                                         @RequestParam int quantity,
+                                         @RequestParam boolean isRecurring,
+                                         @RequestParam int frequencyOfRecurrence){
         Vendor vendor = getOne(id);
-
-        Menu newMenu = new Menu(
-                name, description, price, quantity,
-                isRecurring, frequencyOfRecurrence,
-                vendor, new ArrayList<>(), LocalDateTime.now()
-        );
-        return menuRepository.save(newMenu);
+        return this.menuService.create(vendor, name, description, price,
+                quantity, isRecurring, frequencyOfRecurrence);
     }
 
+    @RequestMapping(value = "{id}/menus/{menuId}", method = RequestMethod.PATCH)
+    public @ResponseBody Menu updateMenu(@PathVariable Long id,
+                                         @PathVariable Long menuId,
+                                         @RequestParam String name,
+                                         @RequestParam String description,
+                                         @RequestParam BigDecimal price,
+                                         @RequestParam int quantity,
+                                         @RequestParam boolean isRecurring,
+                                         @RequestParam int frequencyOfRecurrence) {
+        Vendor vendor = this.getOne(id);
+        return this.menuService.updateMenu(vendor, menuId, name, description, price,
+                quantity, isRecurring, frequencyOfRecurrence);
+    }
+
+    //    DELETE menu
+    @RequestMapping(value = "{id}/menus/{menuId}", method = RequestMethod.DELETE)
+    public @ResponseBody void deleteMenu(@PathVariable Long id,
+                                         @PathVariable Long menuId) {
+        Vendor vendor = this.getOne(id);
+        this.menuService.delete(vendor, menuId);
+    }
+
+    /*get vendor order*/
+    @GetMapping("{id}/orders")
+    public @ResponseBody List<Order> getVendorOrder(@PathVariable Long id) {
+        return this.orderService.findOrderByVendorId(this.getOne(id));
+    }
+
+    //    use it too for updating OrderStatus
+    @RequestMapping(value = "{id}/orders/{orderId}/order-status", method = RequestMethod.PATCH)
+    public @ResponseBody Order updateOrderOrderStatusId(
+            @PathVariable Long id,
+            @PathVariable Long orderId,
+            @RequestParam int orderStatusId){
+        Vendor vendor = this.vendorService.getOne(id);
+        return this.orderService.updateOrderStatusId(vendor, orderId, orderStatusId);
+    }
+
+    @GetMapping("{id}/menus")
+    public List<Menu> getMyMenu(@PathVariable Long id){
+        return this.menuService.getVendorMenus(this.getOne(id));
+    }
 
 }

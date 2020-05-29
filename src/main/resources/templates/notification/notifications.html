@@ -22,7 +22,7 @@
         <td th:text="${notification.customerId.fullName}">
         <td th:text="${notification.orderId.id}">
         <td th:text="${notification.message}">
-        <td th:text="${notification.messageStatusId.name}">
+        <td th:text="${notification.notificationStatusId.name}">
         <td th:text="${notification.dateTimeCreated}">
 </table>
 
@@ -51,8 +51,8 @@
         </select>
     </label>
     <label>Message Status Id:
-        <select name="messageStatusId">
-            <option th:each="messageStatus : ${messageStatuses}" th:text="${messageStatus.name}" th:value="${messageStatus.id}">
+        <select name="notificationStatusId">
+            <option th:each="notificationStatus : ${messageStatuses}" th:text="${notificationStatus.name}" th:value="${notificationStatus.id}">
                 Message Status name
             </option>
         </select>

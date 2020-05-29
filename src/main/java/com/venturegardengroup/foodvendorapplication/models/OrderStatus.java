@@ -1,5 +1,6 @@
 package com.venturegardengroup.foodvendorapplication.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,12 +24,12 @@ import java.util.List;
 @Table(name = "order_statuses")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class  OrderStatus extends AbstractPersistable<Integer> {
-    //how do i initialize this table with values like "pending",
-    // "in-progress", "completed", "canceled",
+
     @NotEmpty
     @Column(name = "name")
     private String name;
     @OneToMany(mappedBy = "orderStatusId")
+    @JsonIgnore
     private List<Order> orders = new ArrayList<>();
 
 }

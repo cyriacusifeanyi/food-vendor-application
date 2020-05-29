@@ -1,28 +1,43 @@
 package com.venturegardengroup.foodvendorapplication.services;
 
-import com.venturegardengroup.foodvendorapplication.repositories.OrderRepository;
+import com.venturegardengroup.foodvendorapplication.models.Notification;
+import com.venturegardengroup.foodvendorapplication.models.Vendor;
+import com.venturegardengroup.foodvendorapplication.repositories.VendorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional
 public class VendorService {
     @Autowired
-    private OrderRepository orderRepository;
+    private VendorRepository vendorRepository;
 
-    public void makeOrder(){}
+    public List<Vendor> list(){
+        return vendorRepository.findAll();
+    }
 
-    public void cancelOrder(){}
+    public Vendor getOne(Long id){
+        return this.vendorRepository.getOne(id);
+    }
 
-    public void updateOrder(){}
+    public void delete(Long id){
+        vendorRepository.deleteById(id);
+    }
 
-//    public void transferFunds(String from, String to, Integer amount) {
-//        Account accountFrom = this.accountRepository.findByIban(from);
-//        Account accountTo = this.accountRepository.findByIban(to);
-//
-//        accountFrom.setBalance(accountFrom.getBalance() - amount);
-//        accountTo.setBalance(accountTo.getBalance() + amount);
-//    }
+    public Vendor create(String businessName, String phoneNumber){
+
+        Vendor vendor = new Vendor(
+                businessName, phoneNumber,
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                LocalDateTime.now());
+        return vendorRepository.saveAndFlush(vendor);
+    }
 
 }

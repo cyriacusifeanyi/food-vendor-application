@@ -2,10 +2,10 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${messageStatus.name}"> </title>
+    <title th:text="${notificationStatus.name}"> </title>
 </head>
 <body>
-<h2 th:text="${'All '+ messageStatus.name + 'notifications'}"></h2>
+<h2 th:text="${'All '+ notificationStatus.name + 'notifications'}"></h2>
 
 <table>
     <thead>
@@ -16,7 +16,7 @@
         <th>Message
         <th>Date time
     <tbody>
-    <tr th:each="notification: ${messageStatus.notifications}">
+    <tr th:each="notification: ${notificationStatus.notifications}">
         <td th:text="${notification.vendorId.businessName}">
         <td th:text="${notification.customerId.fullName}">
         <td th:text="${notification.orderId.id}">

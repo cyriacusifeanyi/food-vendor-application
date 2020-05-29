@@ -1,64 +1,56 @@
 package com.venturegardengroup.foodvendorapplication.controllers;
 
+import com.venturegardengroup.foodvendorapplication.models.Order;
 import com.venturegardengroup.foodvendorapplication.models.OrderStatus;
-import com.venturegardengroup.foodvendorapplication.models.Role;
-import com.venturegardengroup.foodvendorapplication.repositories.OrderRepository;
-import com.venturegardengroup.foodvendorapplication.repositories.OrderStatusRepository;
-import org.springframework.beans.BeanUtils;
+import com.venturegardengroup.foodvendorapplication.services.OrderStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/order-statuses")
 public class OrderStatusController {
     @Autowired
-    private OrderStatusRepository orderStatusRepository;
-    @Autowired
-    private OrderRepository orderRepository;
+    private OrderStatusService orderStatusService;
 
     //    view all
     @GetMapping()
     public List<OrderStatus> list() {
-        return orderStatusRepository.findAll();
+        return this.orderStatusService.list();
     }
+
     //    view one
     @GetMapping("{id}")
     public OrderStatus getOne(@PathVariable int id) {
-        return orderStatusRepository.getOne(id);
+        return this.orderStatusService.getOne(id);
     }
 
     @PostMapping()
     public OrderStatus create(@RequestParam String name) {
-        return orderStatusRepository.save(new OrderStatus(name, new ArrayList<>()));
+        return this.orderStatusService.create(name);
     }
 
+    /*Don't use unless you are admin*/
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     public void delete(@PathVariable int id) {
-//        delete order
-        orderRepository.deleteOrderByOrderStatusId(getOne(id));
-        orderStatusRepository.deleteById(id);
+        this.orderStatusService.delete(id);
     }
 
-    @RequestMapping(value = "{id}", method = RequestMethod.PUT)
+    @RequestMapping(value = "{id}", method = RequestMethod.PATCH)
     public OrderStatus update(@PathVariable int id,  @RequestParam String name) {
+        return this.orderStatusService.update(id, name);
+    }
 
-        OrderStatus existingOrderStatus = orderStatusRepository.getOne(id);
-        existingOrderStatus.setName(name);
-        return orderStatusRepository.saveAndFlush(existingOrderStatus);
+    @RequestMapping(value = "{id}/orders")
+    public List<Order> getOrders(@PathVariable int id){
+        return this.orderStatusService.getOrders(id);
     }
 
 }
